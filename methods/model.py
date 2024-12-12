@@ -1,6 +1,7 @@
-import torch.nn as nn
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
+
 from .backbone import BertRelationEncoder
 
 
@@ -17,7 +18,6 @@ class Classifier(nn.Module):
 
     def forward(self, x):
         return self.head(x)
-
 
 
 class ClassifierBasic(nn.Module):

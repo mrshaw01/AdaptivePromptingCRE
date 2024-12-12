@@ -1,8 +1,9 @@
-import yaml
 import torch
+import yaml
+
 from config import Param
-from methods.utils import setup_seed
 from methods.manager import Manager
+from methods.utils import setup_seed
 
 
 def run(args):
@@ -10,9 +11,6 @@ def run(args):
     print(yaml.dump(args.__dict__, sort_keys=True, indent=4))
 
     setup_seed(args.seed)
-    
-    # for seed in [2421, 2021]:
-        # args.seed = seed
     manager = Manager(args)
     manager.train(args)
 

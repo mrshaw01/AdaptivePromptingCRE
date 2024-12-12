@@ -1,14 +1,14 @@
-import os
-import math
-import tqdm
 import copy
-import random
 import itertools
-import numpy as np
+import math
+import os
+import random
 from datetime import datetime
 
+import numpy as np
 import torch
 import torch.nn.functional as F
+import tqdm
 
 
 def setup_seed(seed):
@@ -225,7 +225,6 @@ def bn_update(loader, model, verbose=False, subset=None, **kwargs):
             num_batches = int(num_batches * subset)
             loader = itertools.islice(loader, num_batches)
         if verbose:
-
             loader = tqdm.tqdm(loader, total=num_batches)
         for input, _ in loader:
             input = input.cuda(non_blocking=True)

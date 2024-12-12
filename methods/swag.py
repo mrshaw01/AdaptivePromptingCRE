@@ -1,12 +1,12 @@
-import torch
-import numpy as np
-import itertools
-from torch.distributions.normal import Normal
 import copy
+import itertools
 
 import gpytorch
-from gpytorch.lazy import RootLazyTensor, DiagLazyTensor, AddedDiagLazyTensor
+import numpy as np
+import torch
 from gpytorch.distributions import MultivariateNormal
+from gpytorch.lazy import AddedDiagLazyTensor, DiagLazyTensor, RootLazyTensor
+from torch.distributions.normal import Normal
 
 from .utils import flatten, unflatten_like
 
@@ -88,7 +88,7 @@ class SWAG(torch.nn.Module):
         if cov:
             cov_mat_sqrt_list = []
 
-        for (module, name) in self.params:
+        for module, name in self.params:
             mean = module.__getattr__("%s_mean" % name)
             sq_mean = module.__getattr__("%s_sq_mean" % name)
 
@@ -251,7 +251,7 @@ class SWAG(torch.nn.Module):
 
         if block:
             full_logdet = 0
-            for (var, cov_mat_root) in zip(var_list, covar_mat_root_list):
+            for var, cov_mat_root in zip(var_list, covar_mat_root_list):
                 block_logdet = self.block_logdet(var, cov_mat_root)
                 full_logdet += block_logdet
         else:

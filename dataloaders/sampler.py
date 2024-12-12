@@ -1,8 +1,10 @@
+import json
+import os
 import pickle
 import random
-import json, os
-from transformers import BertTokenizer
+
 import numpy as np
+from transformers import BertTokenizer
 
 
 def get_tokenizer(args):
@@ -13,7 +15,8 @@ def get_tokenizer(args):
 def extract_tokens_between_markers(tokens, start_marker, end_marker):
     start_idx = tokens.index(start_marker)
     end_idx = tokens.index(end_marker)
-    return " ".join(tokens[start_idx + 1:end_idx])
+    return " ".join(tokens[start_idx + 1 : end_idx])
+
 
 class data_sampler(object):
     def __init__(self, args, seed=None):
@@ -82,7 +85,6 @@ class data_sampler(object):
         return self
 
     def __next__(self):
-
         if self.batch == self.task_length:
             raise StopIteration()
 
@@ -125,14 +127,8 @@ class data_sampler(object):
                 for i, sample in enumerate(rel_samples):
                     tokenized_sample = {}
                     tokenized_sample["relation"] = self.rel2id[sample["relation"]]
-                    
-                    text = extract_tokens_between_markers(sample["tokens"], "[E11]", "[E12]") \
-                        + "[MASK]" \
-                        + extract_tokens_between_markers(sample["tokens"], "[E21]", "[E22]") \
-                        + "[SEP]" \
-                        + " ".join(sample["tokens"]) \
-                        + "[SEP]" \
-                    
+
+                    text = extract_tokens_between_markers(sample["tokens"], "[E11]", "[E12]") + "[MASK]" + extract_tokens_between_markers(sample["tokens"], "[E21]", "[E22]") + "[SEP]" + " ".join(sample["tokens"]) + "[SEP]"
                     tokenized_sample["tokens"] = self.tokenizer.encode(text, padding="max_length", truncation=True, max_length=self.args.max_length)
                     if self.args.task_name == "FewRel":
                         if i < self.args.num_of_train:

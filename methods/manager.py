@@ -1,24 +1,23 @@
-from dataloaders.sampler import data_sampler
-from dataloaders.data_loader import get_data_loader
+import pickle
+import random
 
-from .swag import SWAG
-from .model import *
-from .backbone import *
-from .prompt import *
-from .utils import *
-
+import numpy as np
 import torch
-import torch.optim as optim
 import torch.nn as nn
 import torch.nn.functional as F
-
-import random
-import numpy as np
-
+import torch.optim as optim
 from sklearn.mixture import GaussianMixture
-
 from tqdm import tqdm, trange
-import pickle
+
+from dataloaders.data_loader import get_data_loader
+from dataloaders.sampler import data_sampler
+
+from .backbone import *
+from .model import *
+from .prompt import *
+from .swag import SWAG
+from .utils import *
+
 
 class Manager(object):
     def __init__(self, args):
@@ -167,7 +166,6 @@ class Manager(object):
                 new_training_data.append({"relation": labels[i], "tokens": tokens[i], "key": x_key[i]})
             td.set_postfix()
 
-
         # new data loader
         data_loader = get_data_loader(args, new_training_data, shuffle=True)
 
@@ -212,7 +210,6 @@ class Manager(object):
 
                 # display
                 td.set_postfix(loss=np.array(losses).mean(), acc=total_hits / sampled)
-
 
         for e_id in range(args.prompt_pool_epochs):
             train_data(data_loader, f"train_prompt_pool_epoch_{e_id + 1}", e_id)
@@ -327,7 +324,7 @@ class Manager(object):
             except:
                 sampled -= len(labels)
                 continue
-        
+
         return total_hits / sampled
 
     def train(self, args):
@@ -451,7 +448,7 @@ class Manager(object):
                 test_cur.append(cur_acc)
                 test_total.append(total_acc)
 
-                acc_sum =[]
+                acc_sum = []
                 print("===UNTIL-NOW==")
                 print("accuracies:")
                 for x in test_cur:
@@ -460,17 +457,18 @@ class Manager(object):
                 for x in test_total:
                     print(x)
                     acc_sum.append(x)
-                    
-                results.append({
-                    "task": steps,
-                    "results": list(acc_sum),
-                })
-                
+
+                results.append(
+                    {
+                        "task": steps,
+                        "results": list(acc_sum),
+                    }
+                )
+
                 if not os.path.exists(f"./results/{args.seed}_coda_prompt"):
-                    os.makedirs(f"./results/{args.seed}_coda_prompt")  
-                                
+                    os.makedirs(f"./results/{args.seed}_coda_prompt")
+
                 with open(f"./results/{args.seed}_coda_prompt/task_{steps}.pickle", "wb") as file:
                     pickle.dump(results, file)
-
 
         del self.memorized_samples, self.prompt_pools, all_train_tasks, all_tasks, seen_data, results, encoder, self.id2taskid, sampler, self.replayed_data, self.replayed_key, test_cur, test_total
